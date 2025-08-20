@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Indicadores Daule — Panel</title>
+<style>
+  :root{
+    --bg: #f6f7fb;
+    --bg-2:#eef1f6;
+    --text:#0f172a;
+    --muted:#6b7280;
+    --brand:#157a4b;
+    --brand-2:#0e6240;
+    --card:#ffffff;
+    --shadow: 0 10px 25px rgba(2,6,23,.08);
+    --radius: 18px;
+    --ring: 0 0 0 3px rgba(21,122,75,.2);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0b1020;
+      --bg-2:#0a0e1a;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --brand:#1ea56a;
+      --brand-2:#147e52;
+      --card:#0f172a;
+      --shadow: 0 10px 25px rgba(0,0,0,.45);
+      --ring: 0 0 0 3px rgba(30,165,106,.25);
+    }
+  }
+  /* Dark mode manual toggle */
+  .dark {
+    --bg:#0b1020;
+    --bg-2:#0a0e1a;
+    --text:#e5e7eb;
+    --muted:#9ca3af;
+    --brand:#1ea56a;
+    --brand-2:#147e52;
+    --card:#0f172a;
+    --shadow: 0 10px 25px rgba(0,0,0,.45);
+    --ring: 0 0 0 3px rgba(30,165,106,.25);
+  }
+
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--text); background:
+    radial-gradient(1200px 600px at 80% -10%, var(--bg-2), transparent 60%),
+    radial-gradient(1000px 500px at -10% 0%, var(--bg-2), transparent 55%),
+    var(--bg);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* NAVBAR */
+  .nav{
+    position: sticky; top:0; z-index:50;
+    backdrop-filter: saturate(150%) blur(6px);
+    background: color-mix(in oklab, var(--brand) 22%, transparent);
+    border-bottom: 1px solid color-mix(in oklab, var(--brand) 35%, transparent);
+    color:#fff;
+  }
+  .nav-inner{
+    max-width:1200px; margin:auto; padding:12px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{display:flex; gap:10px; align-items:center; font-weight:800; letter-spacing:.2px}
+  .brand .logo{width:28px; height:28px; display:grid; place-items:center;
+    background:#fff; color:var(--brand); border-radius:10px; font-size:16px; font-weight:900}
+  .actions{display:flex; align-items:center; gap:10px}
+  .btn{
+    border:0; border-radius:12px; padding:8px 12px; cursor:pointer;
+    background: color-mix(in oklab, #ffffff 15%, transparent);
+    color:#fff; display:inline-flex; align-items:center; gap:8px;
+    transition: transform .12s ease, background .2s ease, opacity .2s ease;
+  }
+  .btn:hover{transform:translateY(-1px); background: color-mix(in oklab, #ffffff 26%, transparent)}
+  .icon{width:18px; height:18px; display:inline-block}
+  .avatar{
+    width:36px; height:36px; border-radius:50%; display:grid; place-items:center;
+    background:#fff; color:var(--brand); font-weight:800;
+    box-shadow: var(--shadow);
+  }
+
+  /* DROPDOWN */
+  .menu{position:relative}
+  .dropdown{
+    position:absolute; right:0; margin-top:10px; width:220px;
+    background:var(--card); border-radius:16px; box-shadow: var(--shadow); overflow:hidden;
+    border:1px solid color-mix(in oklab, var(--brand) 10%, transparent);
+    display:none;
+  }
+  .dropdown.open{display:block; animation: pop .16s ease forwards}
+  @keyframes pop {from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:translateY(0)}}
+  .dd-item{
+    display:flex; gap:10px; align-items:center; width:100%;
+    padding:12px 14px; background:transparent; border:0; text-align:left; color:var(--text);
+    cursor:pointer; font-size:14px;
+  }
+  .dd-item:hover{background: color-mix(in oklab, var(--brand) 8%, transparent)}
+  .dd-sep{height:1px; background: color-mix(in oklab, var(--brand) 10%, transparent); margin:4px 0}
+
+  /* HEADER */
+  .hero{max-width:1200px; margin:32px auto 10px; padding:0 20px; text-align:center}
+  .hero h1{font-size: clamp(24px, 2.4vw + 12px, 38px); margin:0 0 6px}
+  .hero p{color:var(--muted); margin:0}
+
+  /* GRID */
+  .grid{max-width:1200px; margin:22px auto 60px; padding:0 20px;
+    display:grid; gap:18px; grid-template-columns: repeat(12, 1fr)}
+  .col{grid-column: span 12}
+  @media (min-width:640px){ .col{grid-column: span 6}}
+  @media (min-width:1024px){ .col{grid-column: span 3}}
+
+  .card{
+    border-radius: var(--radius);
+    background: linear-gradient(145deg, color-mix(in oklab, var(--card) 88%, transparent), color-mix(in oklab, var(--brand) 14%, var(--card)));
+    box-shadow: var(--shadow);
+    padding:20px; position:relative; overflow:hidden; cursor:pointer;
+    transition: transform .15s ease, box-shadow .2s ease, outline .2s ease;
+  }
+  .card:hover{transform: translateY(-3px) scale(1.01); box-shadow: 0 16px 35px rgba(2,6,23,.18)}
+  .card:focus-visible{outline: var(--ring)}
+  .badge{
+    position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--brand) 35%, transparent), transparent 70%);
+    filter: blur(2px); opacity:.7; pointer-events:none;
+  }
+  .card h3{margin:8px 0 6px; font-size:18px}
+  .card p{margin:0; color:var(--muted)}
+  .card .bigicon{width:34px; height:34px; opacity:.95}
+
+  .footer{
+    max-width:1200px; margin:0 auto 40px; padding:0 20px; color:var(--muted); text-align:center; font-size:12px
+  }
+
+  /* Utility pills */
+  .pill{
+    display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:6px 10px;
+    background: color-mix(in oklab, var(--brand) 12%, transparent); color:#fff; font-size:12px
+  }
+</style>
+</head>
+<body>
+  <!-- NAV -->
+  <header class="nav">
+    <div class="nav-inner" role="navigation" aria-label="Barra principal">
+      <div class="brand">
+        <div class="logo">ID</div>
+        <div>Indicadores Daule</div>
+      </div>
+      <div class="actions">
+        <button id="themeBtn" class="btn" aria-label="Cambiar tema">
+          <!-- moon/sun svg toggled by JS -->
+          <svg id="moon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.8A9 9 0 0 1 11.2 3 7.5 7.5 0 1 0 21 12.8z"/></svg>
+          <svg id="sun" style="display:none" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l-1.5-1.5M20.5 20.5 19 19M5 19l-1.5 1.5M20.5 3.5 19 5"/></svg>
+        </button>
+
+        <div class="menu">
+          <button id="userBtn" class="btn" aria-haspopup="menu" aria-expanded="false">
+            <div class="avatar">U</div>
+            <span>Usuario</span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="dropdown" class="dropdown" role="menu" aria-label="Opciones de usuario">
+            <div style="padding:10px 12px; display:flex; align-items:center; gap:8px">
+              <span class="pill">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 18 0"/></svg>
+                En línea
+              </span>
+              <span style="margin-left:auto; font-size:12px; color:var(--muted)">v1.0</span>
+            </div>
+            <button class="dd-item" id="openSettings">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V22a2 2 0 1 1-4 0v-.07a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 5 15.4a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.07A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.04 4.3l.06.06c.48.48 1.17.62 1.82.33A1.65 1.65 0 0 0 10.4 3.2V3a2 2 0 1 1 4 0v.07a1.65 1.65 0 0 0 1 1.51c.65.29 1.34.15 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06c-.48.48-.62 1.17-.33 1.82.29.65.76 1.19 1.51 1.19H22a2 2 0 1 1 0 4h-.07c-.75 0-1.22.54-1.51 1z"/></svg>
+              Configuración
+            </button>
+            <button class="dd-item" id="langBtn">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h12M9 3v2m3 4-3 7-3-7m12 0h3M18 14h3"/></svg>
+              Cambiar idioma
+            </button>
+            <div class="dd-sep"></div>
+            <button class="dd-item" id="logoutBtn" style="color:#dc2626">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 21V3"/></svg>
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Panel de Indicadores</h1>
+    <p>Gestiona metas, indicadores, avances y reportes con una interfaz rápida, elegante y accesible.</p>
+  </section>
+
+  <!-- GRID -->
+  <main class="grid" aria-label="Accesos rápidos">
+    <article class="card col" tabindex="0" data-section="Metas">
+      <div class="badge"></div>
+      <svg class="bigicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10V3l-7 7"/><path d="M3 19l6-6 4 4 8-8"/></svg>
+      <h3>Metas</h3>
+      <p>Define objetivos y responsables. Seguimiento por periodo.</p>
+    </article>
+
+    <article class="card col" tabindex="0" data-section="Indicadores">
+      <div class="badge"></div>
+      <svg class="bigicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 13l3 3 7-7"/></svg>
+      <h3>Indicadores</h3>
+      <p>Administra fórmulas, umbrales y visualizaciones.</p>
+    </article>
+
+    <article class="card col" tabindex="0" data-section="Avances">
+      <div class="badge"></div>
+      <svg class="bigicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19h16M4 15h10M4 11h6M4 7h14"/></svg>
+      <h3>Avances</h3>
+      <p>Registra progreso por indicador y periodo.</p>
+    </article>
+
+    <article class="card col" tabindex="0" data-section="Reportes">
+      <div class="badge"></div>
+      <svg class="bigicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/></svg>
+      <h3>Reportes</h3>
+      <p>Genera informes automáticos en un clic.</p>
+    </article>
+  </main>
+
+  <p class="footer">© <span id="year"></span> Indicadores Daule · UI demo</p>
+
+  <!-- SETTINGS MODAL (ligero) -->
+  <dialog id="settingsDialog" style="border:0; border-radius:16px; padding:0; max-width:520px; width:92%; box-shadow: var(--shadow); background:var(--card); color:var(--text)">
+    <form method="dialog" style="padding:18px 18px 12px">
+      <h3 style="margin:0 0 10px; font-size:18px">Configuración</h3>
+      <div style="display:grid; gap:14px">
+        <label style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+          <span>Modo oscuro</span>
+          <input type="checkbox" id="darkToggle" />
+        </label>
+        <label style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+          <span>Idioma</span>
+          <select id="langSelect">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+          </select>
+        </label>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px">
+        <button class="dd-item" value="cancel">Cerrar</button>
+        <button class="dd-item" id="saveSettings" value="default">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+<script>
+  // Helpers
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+
+  // Year
+  $('#year').textContent = new Date().getFullYear();
+
+  // Theme toggle + persist
+  const root = document.documentElement;
+  const themeBtn = $('#themeBtn');
+  const moon = $('#moon'), sun = $('#sun');
+
+  function applyTheme(v){
+    if(v === 'dark'){ root.classList.add('dark'); sun.style.display='inline'; moon.style.display='none'; }
+    else { root.classList.remove('dark'); sun.style.display='none'; moon.style.display='inline'; }
+    localStorage.setItem('theme', v);
+    $('#darkToggle').checked = (v === 'dark');
+  }
+  const savedTheme = localStorage.getItem('theme');
+  applyTheme(savedTheme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  themeBtn.addEventListener('click', ()=>applyTheme(root.classList.contains('dark') ? 'light' : 'dark'));
+
+  // User dropdown
+  const userBtn = $('#userBtn');
+  const dropdown = $('#dropdown');
+  userBtn.addEventListener('click', (e)=>{
+    dropdown.classList.toggle('open');
+    userBtn.setAttribute('aria-expanded', dropdown.classList.contains('open'));
+  });
+  document.addEventListener('click', (e)=>{
+    if(!dropdown.contains(e.target) && !userBtn.contains(e.target)){ dropdown.classList.remove('open'); userBtn.setAttribute('aria-expanded','false'); }
+  });
+
+  // Fake actions
+  $('#logoutBtn').addEventListener('click', ()=>alert('Sesión cerrada (demo). Aquí harías redirect a /login.'));
+  $('#langBtn').addEventListener('click', ()=>$('#settingsDialog').showModal());
+
+  // Settings dialog
+  const settingsDialog = $('#settingsDialog');
+  $('#openSettings').addEventListener('click', ()=>settingsDialog.showModal());
+  $('#darkToggle').checked = root.classList.contains('dark');
+  $('#saveSettings').addEventListener('click', (e)=>{
+    e.preventDefault();
+    applyTheme($('#darkToggle').checked ? 'dark' : 'light');
+    const lang = $('#langSelect').value;
+    localStorage.setItem('lang', lang);
+    settingsDialog.close();
+    alert('Guardado. Idioma: '+lang+' (demo)');
+  });
+
+  // Keyboard & focus niceties
+  $$('.card').forEach(card=>{
+    card.addEventListener('click', ()=>alert('Abrir sección: '+card.dataset.section+' (demo)'));
+    card.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); card.click(); } });
+  });
+
+  // Simple i18n demo on load (title only)
+  const langSaved = localStorage.getItem('lang') || 'es';
+  $('#langSelect').value = langSaved;
+  if(langSaved==='en'){ document.title='Daule KPIs — Dashboard'; $('.hero h1').textContent='KPI Dashboard'; $('.hero p').textContent='Manage goals, indicators, progress and reports with a fast, elegant and accessible UI.'; }
+  if(langSaved==='pt'){ document.title='Indicadores Daule — Painel'; $('.hero h1').textContent='Painel de Indicadores'; $('.hero p').textContent='Gerencie metas, indicadores, avanços e relatórios com uma interface rápida e acessível.'; }
+</script>
+</body>
+</html>
